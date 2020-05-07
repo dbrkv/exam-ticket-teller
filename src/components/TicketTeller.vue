@@ -1,37 +1,55 @@
 <template>
     <div>
-        <div v-show="!started">
-            <div class="form-group">
-                <label for="max_tickets_amount">Всего билетов</label>
-                <input v-model="maxTickets" class="form-control" id="max_tickets_amount"
-                       placeholder="Enter max tickets to generate" type="number"/>
+        <header>
+            <h1>{{ examName }}</h1>
+        </header>
+        <main>
+
+            <div class="pb-5">
+                <div v-show="!started">
+                    <div class="form-group">
+                        <label for="max_tickets_amount">Название экзамена</label>
+                        <input v-model="examName" class="form-control" id="exam_name"
+                               placeholder="Экзамен по ..."/>
+                    </div>
+                    <div class="form-group">
+                        <label for="max_tickets_amount">Всего билетов</label>
+                        <input v-model="maxTickets" class="form-control" id="max_tickets_amount"
+                               placeholder="Колличество билетов" type="number"/>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" v-on:click="startTelling">Начать</button>
+                    </div>
+                </div>
+                <div v-show="started" class="mb-3">
+                    <h1 class="current-ticket" v-bind:class="{ 'current-ticket-confirmed': currentTicketConfirmed }">{{
+                        currentTicket }}</h1>
+                    <h1 v-show="currentTicket === undefined"
+                        class="current-ticket">Н/Д</h1>
+                    <button v-on:click="tellTicket" :disabled="ticketJar.length < 1"
+                            class="btn btn-primary btn-lg btn-block">Тянуть
+                    </button>
+                    <hr/>
+                    <button v-on:click="confirmTicket" :disabled="currentTicketConfirmed || currentTicket === undefined"
+                            class="btn btn-success btn-lg">
+                        Подтвердить
+                    </button>
+                </div>
+                <div v-show="ticketJar.length <= 0 && started" class="mb-3">
+                    <p>
+                        Не осталось билетов. Начните сначала.
+                    </p>
+                    <button class="btn btn-danger" v-on:click="reset">Сброс</button>
+                </div>
+                <div class="clearfix d-inline"></div>
             </div>
-            <div class="form-group">
-                <button class="btn btn-primary" v-on:click="startTelling">Начать</button>
-            </div>
-        </div>
-        <div v-show="started" class="mb-3">
-            <h1 class="current-ticket" v-bind:class="{ 'current-ticket-confirmed': currentTicketConfirmed }">{{ currentTicket }}</h1>
-            <h1 v-show="currentTicket === undefined"
-                class="current-ticket">Н/Д</h1>
-            <button v-on:click="tellTicket" :disabled="ticketJar.length < 1" class="btn btn-primary btn-lg btn-block">Тянуть</button>
-            <hr/>
-            <button v-on:click="confirmTicket" :disabled="currentTicketConfirmed || currentTicket === undefined" class="btn btn-success btn-lg">
-                Подтвердить
-            </button>
-        </div>
-        <div v-show="ticketJar.length <= 0 && started" class="mb-3">
-            <p>
-                Не осталось билетов. Начните сначала.
-            </p>
-            <button class="btn btn-danger" v-on:click="reset">Сброс</button>
-        </div>
-        <nav class="navbar fixed-bottom navbar-light bg-light">
-            <a class="btn btn-outline-danger" href="#" v-on:click="reset">Сброс</a>
-            <div class="float-right">
-                {{ticketJar}}->{{ voidedTickets }}
-            </div>
-        </nav>
+            <nav class="navbar fixed-bottom navbar-light bg-light">
+                <a class="btn btn-outline-danger" href="#" v-on:click="reset">Сброс</a>
+                <div class="float-right">
+                    {{ticketJar}}->{{ voidedTickets }}
+                </div>
+            </nav>
+        </main>
     </div>
 </template>
 
@@ -43,6 +61,7 @@
     export default {
         name: "TicketTeller",
         props: {
+            examName: String,
             maxTickets: Number,
             voidedTickets: {
                 type: Array,
@@ -60,9 +79,10 @@
             currentTicketConfirmed: Boolean,
         },
         mounted() {
-            if(localStorage.getItem('ticket-teller')) {
+            if (localStorage.getItem('ticket-teller')) {
 
                 const {
+                    examName,
                     maxTickets,
                     voidedTickets,
                     ticketJar,
@@ -71,6 +91,7 @@
                     currentTicketConfirmed
                 } = JSON.parse(localStorage.getItem('ticket-teller'))
 
+                this.examName = examName;
                 this.maxTickets = maxTickets;
                 this.voidedTickets = voidedTickets;
                 this.ticketJar = ticketJar;
@@ -82,6 +103,7 @@
         methods: {
             save() {
                 localStorage.setItem('ticket-teller', JSON.stringify({
+                    examName: this.examName,
                     maxTickets: this.maxTickets,
                     voidedTickets: this.voidedTickets,
                     ticketJar: this.ticketJar,
@@ -127,7 +149,7 @@
 
                 console.log(this.currentTicket);
 
-                if(this.voidedTickets.indexOf(this.currentTicket) === -1 && this.currentTicket !== undefined) {
+                if (this.voidedTickets.indexOf(this.currentTicket) === -1 && this.currentTicket !== undefined) {
                     this.voidedTickets.push(this.currentTicket);
                 }
 
@@ -168,6 +190,12 @@
         color: #040f0f;
         font-size: 21rem;
         text-align: center;
+    }
+
+    @media (max-height: 600px) {
+        .current-ticket {
+            font-size: 15rem;
+        }
     }
 
     .current-ticket-confirmed {

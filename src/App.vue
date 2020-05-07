@@ -31,7 +31,7 @@ export default {
   }
 
   header {
-    padding: 115px 0 32px 0;
+    padding: 1rem 0 1rem 0;
     background-color: #014ecb;
     color: white;
   }
