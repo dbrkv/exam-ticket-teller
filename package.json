@@ -11,7 +11,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "core-js": "^3.6.4",
+    "core-js": "^3.37.1",
     "vue": "^2.6.11"
   },
   "devDependencies": {
@@ -22,7 +22,7 @@
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "gh-pages": "^5.0.0",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.7.16"
   },
   "eslintConfig": {
     "root": true,
